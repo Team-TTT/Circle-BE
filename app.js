@@ -1,13 +1,13 @@
 const createError = require("http-errors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const logger = require("morgan");
+const logger = require("./lib/logger");
 
 const indexRouter = require("./routes/index");
 
 const app = express();
+logger.info("app start");
 
-app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
