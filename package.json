@@ -4,8 +4,8 @@
   "description": "실시간 음성채팅 서비스",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "NODE_ENV=development nodemon ./bin/www",
+    "start": "node index.js",
+    "dev": "NODE_ENV=development nodemon index.js",
     "test": "mocha spec --sort --exit",
     "prepare": "husky install"
   },
@@ -14,6 +14,7 @@
     "dotenv": "^16.0.3",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "mongoose": "^6.6.5",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
   },
