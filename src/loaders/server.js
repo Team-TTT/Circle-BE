@@ -17,9 +17,9 @@ const loadHttpServer = (app) => {
   };
 
   const port = normalizePort(process.env.PORT || "8080");
-  app.set("port", port);
-
   const server = http.createServer(app);
+
+  app.set("port", port);
 
   server.listen(port);
 
