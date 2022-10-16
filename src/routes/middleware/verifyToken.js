@@ -1,5 +1,8 @@
+const createError = require("http-errors");
 const { getAuth } = require("firebase-admin");
+
 const logger = require("../../../libs/logger");
+const { UNAUTHORIZED } = require("../../constants/MESSAGE");
 
 const verifyToken = async (req, res, next) => {
   try {
@@ -15,7 +18,7 @@ const verifyToken = async (req, res, next) => {
   } catch (error) {
     logger.error(error);
 
-    res.status(401).json({ message: "Unauthorized" });
+    next(createError(401, UNAUTHORIZED));
   }
 };
 

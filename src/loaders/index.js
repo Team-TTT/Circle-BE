@@ -26,8 +26,7 @@ const initLoaders = async (app) => {
     res.locals.message = err.message;
     res.locals.error = req.app.get("env") === "development" ? err : {};
 
-    res.status(err.status || 500);
-    res.render("error");
+    res.status(err.status || 500).json(err);
   });
 
   loadHttpServer(app);
