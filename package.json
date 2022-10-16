@@ -13,13 +13,14 @@
     "cookie-parser": "~1.4.4",
     "dotenv": "^16.0.3",
     "express": "~4.16.1",
+    "firebase-admin": "^11.1.0",
     "http-errors": "~1.6.3",
     "mongoose": "^6.6.5",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
   },
   "lint-staged": {
-    "*.{js}": "eslint --fix"
+    "*.js": "eslint --fix"
   },
   "devDependencies": {
     "eslint": "^8.25.0",
