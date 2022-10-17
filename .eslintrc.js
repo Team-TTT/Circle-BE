@@ -29,5 +29,11 @@ module.exports = {
         ignoreTemplateLiterals: true,
       },
     ],
+    "import/no-unresolved": [
+      "error",
+      {
+        ignore: ["^firebase-admin/.+"],
+      },
+    ],
   },
 };

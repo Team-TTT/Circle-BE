@@ -2,8 +2,8 @@ const express = require("express");
 
 const router = express.Router();
 
-router.get("/api", (req, res, next) => {
-  res.json("홈페이지");
-});
+const userRoute = require("./user.route");
+
+router.use("/users", userRoute);
 
 module.exports = router;
