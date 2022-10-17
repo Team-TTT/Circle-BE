@@ -10,7 +10,7 @@ const indexRouter = require("../routes/index");
 const initLoaders = async (app) => {
   logger.info("app start");
 
-  loadDatabase();
+  await loadDatabase();
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
