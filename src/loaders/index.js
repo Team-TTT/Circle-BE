@@ -1,9 +1,11 @@
 const createError = require("http-errors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
+
 const logger = require("../../libs/logger");
 const loadDatabase = require("./database");
 const loadHttpServer = require("./server");
+const connectSocket = require("./socket");
 
 const indexRouter = require("../routes/index");
 
@@ -26,7 +28,8 @@ const initLoaders = async (app) => {
     res.status(err.status || 500).json(err);
   });
 
-  loadHttpServer(app);
+  const server = loadHttpServer(app);
+  connectSocket(server);
 };
 
 module.exports = initLoaders;

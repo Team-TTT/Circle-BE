@@ -56,6 +56,8 @@ const loadHttpServer = (app) => {
 
   server.on("error", onError);
   server.on("listening", onListening);
+
+  return server;
 };
 
 module.exports = loadHttpServer;
