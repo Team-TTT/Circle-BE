@@ -2,8 +2,8 @@ const express = require("express");
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-  res.send("홈페이지");
-});
+const userRoute = require("./user.route");
+
+router.use("/users", userRoute);
 
 module.exports = router;

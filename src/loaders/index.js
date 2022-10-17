@@ -7,7 +7,7 @@ const loadHttpServer = require("./server");
 
 const indexRouter = require("../routes/index");
 
-const initLoaders = async (app) => {
+const initLoaders = (app) => {
   logger.info("app start");
 
   loadDatabase();
