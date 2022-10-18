@@ -1,6 +1,6 @@
 const crypto = require("node:crypto");
 
-const generateSecretDbKey = () => {
+const generateDbSecretKey = () => {
   const key = crypto.randomBytes(32);
   const iv = crypto.randomBytes(16);
 
@@ -40,7 +40,7 @@ const validateSecretKey = (userSecretKey, dbSecreteKey) => {
 };
 
 module.exports = {
-  generateSecretDbKey,
-  validateSecretKey,
+  generateDbSecretKey,
   getUserSecret,
+  validateSecretKey,
 };
