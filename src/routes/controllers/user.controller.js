@@ -18,7 +18,7 @@ const findOrCreateUser = async (req, res, next) => {
     const existUser = await User.findOne({ email }).lean().exec();
 
     if (existUser) {
-      return res.json(existUser);
+      return res.status(200).json(existUser);
     }
 
     const newUser = {
@@ -29,7 +29,7 @@ const findOrCreateUser = async (req, res, next) => {
     const createdUser = await User.create(newUser);
     logger.info(`(User.create.createdUser) ${JSON.stringify(createdUser)}`);
 
-    return res.json(createdUser);
+    return res.status(200).json(createdUser);
   } catch (error) {
     logger.error(error.toString());
 

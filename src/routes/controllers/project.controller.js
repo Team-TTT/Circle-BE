@@ -18,11 +18,9 @@ const saveProject = async (req, res, next) => {
     }
 
     const projectId = mongoose.Types.ObjectId();
-    const secretDbKey = generateSecretDbKey();
-
     const newProject = {
       _id: projectId,
-      secret_key: secretDbKey,
+      secret_key: generateSecretDbKey(),
       owner: userId,
       title,
     };

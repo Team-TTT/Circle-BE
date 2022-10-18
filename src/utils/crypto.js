@@ -1,7 +1,5 @@
 const crypto = require("node:crypto");
 
-const mySecret = process.env.SECRET_KEY;
-
 const generateSecretDbKey = () => {
   const key = crypto.randomBytes(32);
   const iv = crypto.randomBytes(16);
@@ -12,37 +10,33 @@ const generateSecretDbKey = () => {
   };
 };
 
-const getUserSecret = (secretDbKey) => {
-  const { iv: stringIv, key: stringKey } = secretDbKey;
+const getUserSecret = (dbSecretKey) => {
+  const { iv: stringIv, key: stringKey } = dbSecretKey;
   const iv = Buffer.from(stringIv, "hex");
   const key = Buffer.from(stringKey, "hex");
-  const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
 
-  const encrypted = cipher.update(mySecret);
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  const encrypted = cipher.update(process.env.SECRET_KEY);
+
   const encryptedData = Buffer.concat([encrypted, cipher.final()]);
-  const encodedData = encryptedData.toString("hex");
+  const userSecretKey = encryptedData.toString("hex");
 
-  return encodedData;
+  return userSecretKey;
 };
 
-const validateSecretKey = (secretUserKey, secreteDbKey) => {
-  const { iv: stringIv, key: stringKey } = secreteDbKey;
-  const encodedData = secretUserKey;
+const validateSecretKey = (userSecretKey, dbSecreteKey) => {
+  const { iv: stringIv, key: stringKey } = dbSecreteKey;
   const iv = Buffer.from(stringIv, "hex");
   const key = Buffer.from(stringKey, "hex");
-  const encrypted = Buffer.from(encodedData, "hex");
+  const encrypted = Buffer.from(userSecretKey, "hex");
 
-  const decipher = crypto.createDecipheriv(
-    "aes-256-cbc",
-    Buffer.from(key, "hex"),
-    iv
-  );
-
+  const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
   const decrypted = decipher.update(encrypted);
-  const data = Buffer.concat([decrypted, decipher.final()]);
-  const decodedData = data.toString();
 
-  return decodedData === process.env.SECRET_KEY;
+  const decodedData = Buffer.concat([decrypted, decipher.final()]);
+  const mySecret = decodedData.toString();
+
+  return mySecret === process.env.SECRET_KEY;
 };
 
 module.exports = {
