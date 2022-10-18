@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
   projects: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      default: [],
       ref: "Project",
     },
   ],

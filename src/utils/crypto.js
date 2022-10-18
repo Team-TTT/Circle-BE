@@ -10,7 +10,7 @@ const generateDbSecretKey = () => {
   };
 };
 
-const getUserSecret = (dbSecretKey) => {
+const getUserSecretKey = (dbSecretKey) => {
   const { iv: stringIv, key: stringKey } = dbSecretKey;
   const iv = Buffer.from(stringIv, "hex");
   const key = Buffer.from(stringKey, "hex");
@@ -41,6 +41,6 @@ const validateSecretKey = (userSecretKey, dbSecreteKey) => {
 
 module.exports = {
   generateDbSecretKey,
-  getUserSecret,
+  getUserSecretKey,
   validateSecretKey,
 };

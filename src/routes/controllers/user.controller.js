@@ -2,7 +2,7 @@ const createError = require("http-errors");
 const User = require("../../../models/User");
 
 const logger = require("../../../libs/logger");
-const { INVALID_INPUT } = require("../../constants/MESSAGE");
+const { INVALID_INPUT } = require("../../constants");
 
 const findOrCreateUser = async (req, res, next) => {
   try {
@@ -18,7 +18,7 @@ const findOrCreateUser = async (req, res, next) => {
     const existUser = await User.findOne({ email }).lean().exec();
 
     if (existUser) {
-      return res.status(200).json(existUser);
+      return res.json(existUser);
     }
 
     const newUser = {
@@ -29,7 +29,7 @@ const findOrCreateUser = async (req, res, next) => {
     const createdUser = await User.create(newUser);
     logger.info(`(User.create.createdUser) ${JSON.stringify(createdUser)}`);
 
-    return res.status(200).json(createdUser);
+    return res.json(createdUser);
   } catch (error) {
     logger.error(error.toString());
 

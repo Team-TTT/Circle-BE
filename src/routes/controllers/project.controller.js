@@ -1,34 +1,33 @@
-const mongoose = require("mongoose");
 const createError = require("http-errors");
 const Project = require("../../../models/Project");
 const User = require("../../../models/User");
 
 const logger = require("../../../libs/logger");
-const { LIMITED_PROJECT } = require("../../constants/MESSAGE");
-const { generateSecretDbKey } = require("../../utils/crypto");
+const { generateDbSecretKey } = require("../../utils/crypto");
+const { MESSAGE, LIMITED_PROJECT_COUNT } = require("../../constants");
 
-const saveProject = async (req, res, next) => {
+const { LIMITED_PROJECT } = MESSAGE;
+
+const createProject = async (req, res, next) => {
   try {
     const { title } = req.body;
     const { _id: userId, projects: userProjects } = req.user;
     const projectCount = userProjects.length;
 
-    if (projectCount > 2) {
+    if (projectCount > LIMITED_PROJECT_COUNT) {
       return next(createError(423, LIMITED_PROJECT));
     }
 
-    const projectId = mongoose.Types.ObjectId();
     const newProject = {
-      _id: projectId,
-      secret_key: generateSecretDbKey(),
+      secret_key: generateDbSecretKey(),
       owner: userId,
       title,
     };
 
-    await Project.create(newProject);
+    const { _id: projectId } = await Project.create(newProject);
     await User.findByIdAndUpdate(userId, { $push: { projects: projectId } });
 
-    return res.status(200).json({ _id: projectId });
+    return res.json({ _id: projectId });
   } catch (error) {
     logger.error(error.toString());
 
@@ -37,5 +36,5 @@ const saveProject = async (req, res, next) => {
 };
 
 module.exports = {
-  saveProject,
+  createProject,
 };

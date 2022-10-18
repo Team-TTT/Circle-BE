@@ -1,7 +1,7 @@
 const { Server } = require("socket.io");
 
 const logger = require("../../libs/logger");
-const CHANNEL = require("../constants/CHANNEL");
+const { CHANNEL } = require("../constants");
 const { go } = require("../utils/fp");
 
 const joinAndLeaveRoom = (socket) => {
