@@ -2,7 +2,7 @@ const createError = require("http-errors");
 const User = require("../../../models/User");
 
 const logger = require("../../../libs/logger");
-const { INVALID_INPUT } = require("../../constants/MESSAGE");
+const { INVALID_INPUT } = require("../../constants");
 
 const findOrCreateUser = async (req, res, next) => {
   try {

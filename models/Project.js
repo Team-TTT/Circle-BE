@@ -1,12 +1,23 @@
 const mongoose = require("mongoose");
 
+const SecretKeySchema = new mongoose.Schema({
+  iv: {
+    type: String,
+    required: true,
+  },
+  key: {
+    type: String,
+    required: true,
+  },
+});
+
 const ProjectSchema = new mongoose.Schema(
   {
-    secret_key: { type: String, required: true },
+    secret_key: { type: SecretKeySchema, required: true },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
       required: true,
+      ref: "User",
     },
     title: { type: String, required: true },
     channels: [
