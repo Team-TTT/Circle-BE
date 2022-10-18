@@ -6,6 +6,7 @@ const logger = require("../../libs/logger");
 const loadDatabase = require("./database");
 const loadHttpServer = require("./server");
 const connectSocket = require("./socket");
+const { go } = require("../utils/fp");
 
 const indexRouter = require("../routes/index");
 
@@ -28,8 +29,12 @@ const initLoaders = async (app) => {
     res.status(err.status || 500).json(err);
   });
 
-  const server = loadHttpServer(app);
-  connectSocket(server);
+  // eslint-disable-next-line prettier/prettier
+  go(
+    app,
+    loadHttpServer,
+    connectSocket
+  );
 };
 
 module.exports = initLoaders;
