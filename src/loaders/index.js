@@ -1,16 +1,19 @@
 const createError = require("http-errors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
+
 const logger = require("../../libs/logger");
 const loadDatabase = require("./database");
 const loadHttpServer = require("./server");
+const connectSocket = require("./socket");
+const { go } = require("../utils/fp");
 
 const indexRouter = require("../routes/index");
 
-const initLoaders = (app) => {
+const initLoaders = async (app) => {
   logger.info("app start");
 
-  loadDatabase();
+  await loadDatabase();
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
@@ -26,7 +29,12 @@ const initLoaders = (app) => {
     res.status(err.status || 500).json(err);
   });
 
-  loadHttpServer(app);
+  // eslint-disable-next-line prettier/prettier
+  go(
+    app,
+    loadHttpServer,
+    connectSocket
+  );
 };
 
 module.exports = initLoaders;
