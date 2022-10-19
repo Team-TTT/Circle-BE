@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const createError = require("http-errors");
 const Project = require("../../../models/Project");
 const User = require("../../../models/User");
@@ -6,7 +7,7 @@ const logger = require("../../../libs/logger");
 const { generateDbSecretKey } = require("../../utils/crypto");
 const { MESSAGE, LIMITED_PROJECT_COUNT } = require("../../constants");
 
-const { LIMITED_PROJECT } = MESSAGE;
+const { LIMITED_PROJECT, BAD_REQUEST, SUCCESS } = MESSAGE;
 
 const createProject = async (req, res, next) => {
   try {
@@ -35,6 +36,25 @@ const createProject = async (req, res, next) => {
   }
 };
 
+const deleteProject = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+
+    if (!mongoose.isValidObjectId(projectId)) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    await Project.deleteOne({ _id: projectId });
+
+    return res.json({ result: SUCCESS });
+  } catch (error) {
+    logger.error(error.toString());
+
+    return next(error);
+  }
+};
+
 module.exports = {
   createProject,
+  deleteProject,
 };
