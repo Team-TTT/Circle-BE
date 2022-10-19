@@ -36,6 +36,25 @@ const createProject = async (req, res, next) => {
   }
 };
 
+const editProject = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const { title } = req.body;
+
+    if (!mongoose.isValidObjectId(projectId) || title === undefined) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    await Project.findByIdAndUpdate(projectId, { title });
+
+    return res.json({ result: SUCCESS });
+  } catch (error) {
+    logger.error(error.toString());
+
+    return next(error);
+  }
+};
+
 const deleteProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
@@ -56,5 +75,6 @@ const deleteProject = async (req, res, next) => {
 
 module.exports = {
   createProject,
+  editProject,
   deleteProject,
 };
