@@ -18,11 +18,11 @@ const getUser = async (req, res, next) => {
     }
 
     const data = await User.findOne({ email })
-      .populate("projects")
       .lean()
+      .populate("projects")
       .exec();
 
-    return res.json({ ...data });
+    return res.json(data);
   } catch (error) {
     logger.error(error.toString());
 
