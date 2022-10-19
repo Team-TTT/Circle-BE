@@ -2,10 +2,13 @@ const express = require("express");
 
 const router = express.Router();
 
-const userRoute = require("./user.route");
+const authRoute = require("./auth.route");
 const projectRoute = require("./project.route");
 
-router.use("/users", userRoute);
+const setResponseHeader = require("./middleware/setResponseHeader");
+
+router.use(setResponseHeader);
+router.use("/auth", authRoute);
 router.use("/projects", projectRoute);
 
 module.exports = router;

@@ -15,9 +15,9 @@ const initLoaders = async (app) => {
 
   await loadDatabase();
 
+  app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
 
   app.use("/", indexRouter);
 
