@@ -4,7 +4,7 @@ const User = require("../../../models/User");
 const logger = require("../../../libs/logger");
 const { MESSAGE } = require("../../constants");
 
-const { INVALID_INPUT } = MESSAGE;
+const { INVALID_INPUT, SUCCESS } = MESSAGE;
 
 const getUser = async (req, res, next) => {
   try {
@@ -63,14 +63,14 @@ const findOrCreateUser = async (req, res, next) => {
   }
 };
 
-const deleteSessioncookie = (req, res, next) => {
+const deleteSessionCookie = (req, res, next) => {
   res.clearCookie("session");
 
-  return res.json({ result: "Success" });
+  return res.json({ result: SUCCESS });
 };
 
 module.exports = {
   getUser,
   findOrCreateUser,
-  deleteSessioncookie,
+  deleteSessionCookie,
 };

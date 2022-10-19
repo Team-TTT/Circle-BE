@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const createError = require("http-errors");
 const Project = require("../../../models/Project");
 const User = require("../../../models/User");
@@ -6,7 +7,7 @@ const logger = require("../../../libs/logger");
 const { generateDbSecretKey } = require("../../utils/crypto");
 const { MESSAGE, LIMITED_PROJECT_COUNT } = require("../../constants");
 
-const { LIMITED_PROJECT } = MESSAGE;
+const { LIMITED_PROJECT, BAD_REQUEST, SUCCESS } = MESSAGE;
 
 const createProject = async (req, res, next) => {
   try {
@@ -35,6 +36,57 @@ const createProject = async (req, res, next) => {
   }
 };
 
+const editProject = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const { title } = req.body;
+
+    if (!mongoose.isValidObjectId(projectId) || title === undefined) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    await Project.findByIdAndUpdate(projectId, { title });
+
+    return res.json({ result: SUCCESS });
+  } catch (error) {
+    logger.error(error.toString());
+
+    return next(error);
+  }
+};
+
+const deleteProject = async (req, res, next) => {
+  const session = await mongoose.startSession();
+
+  try {
+    const { projectId } = req.params;
+    const { _id: userId } = req.user;
+
+    if (!mongoose.isValidObjectId(projectId)) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    await session.withTransaction(async () => {
+      await Project.deleteOne({ _id: projectId, owner: userId }, { session });
+      await User.findByIdAndUpdate(
+        userId,
+        { $pull: { projects: projectId } },
+        { session }
+      );
+    });
+
+    return res.json({ result: SUCCESS });
+  } catch (error) {
+    logger.error(error.toString());
+
+    return next(error);
+  } finally {
+    session.endSession();
+  }
+};
+
 module.exports = {
   createProject,
+  editProject,
+  deleteProject,
 };
