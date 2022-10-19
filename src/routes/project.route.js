@@ -4,7 +4,10 @@ const router = express.Router();
 
 const projectController = require("./controllers/project.controller");
 
-router.route("/").post(projectController.createProject);
+router
+  .route("/")
+  .get(projectController.getAllProjects)
+  .post(projectController.createProject);
 
 router
   .route("/:projectId")
