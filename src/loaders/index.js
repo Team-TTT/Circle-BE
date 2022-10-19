@@ -26,7 +26,12 @@ const initLoaders = async (app) => {
   });
 
   app.use((err, req, res, next) => {
-    res.status(err.status || 500).json(err);
+    const error =
+      process.env.NODE_ENV === "development"
+        ? err
+        : new Error("Internal server error");
+
+    res.status(err.status || 500).json(error);
   });
 
   // eslint-disable-next-line prettier/prettier

@@ -6,6 +6,9 @@ const projectController = require("./controllers/project.controller");
 
 router.route("/").post(projectController.createProject);
 
-router.route("/:projectId").delete(projectController.deleteProject);
+router
+  .route("/:projectId")
+  .put(projectController.editProject)
+  .delete(projectController.deleteProject);
 
 module.exports = router;
