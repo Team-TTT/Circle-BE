@@ -58,11 +58,13 @@ const editProject = async (req, res, next) => {
 const deleteProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
+    const { _id: userId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId)) {
       return next(createError(400, BAD_REQUEST));
     }
 
+    await User.findByIdAndUpdate(userId, { $pull: { projects: projectId } });
     await Project.deleteOne({ _id: projectId });
 
     return res.json({ result: SUCCESS });
