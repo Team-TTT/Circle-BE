@@ -1,4 +1,10 @@
-.env
+# dependencies
 /node_modules
+
+#config
+/configs/secret
+
+# misc
+.env
 .DS_Store
 /log
