@@ -64,8 +64,8 @@ const deleteProject = async (req, res, next) => {
       return next(createError(400, BAD_REQUEST));
     }
 
+    await Project.deleteOne({ _id: projectId, owner: userId });
     await User.findByIdAndUpdate(userId, { $pull: { projects: projectId } });
-    await Project.deleteOne({ _id: projectId });
 
     return res.json({ result: SUCCESS });
   } catch (error) {
