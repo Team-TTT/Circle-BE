@@ -23,7 +23,7 @@ const getAllProjects = async (req, res, next) => {
       .populate("projects")
       .exec();
 
-    return res.json(data);
+    return res.json(data.projects);
   } catch (error) {
     logger.error(error.toString());
 
