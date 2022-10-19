@@ -9,6 +9,28 @@ const { MESSAGE, LIMITED_PROJECT_COUNT } = require("../../constants");
 
 const { LIMITED_PROJECT, BAD_REQUEST, SUCCESS } = MESSAGE;
 
+const getAllProjects = async (req, res, next) => {
+  try {
+    const { _id: userId } = req.user;
+
+    if (!mongoose.isValidObjectId(userId) || !userId) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    const data = await User
+      .findById(userId)
+      .lean()
+      .populate("projects")
+      .exec();
+
+    return res.json(data.projects);
+  } catch (error) {
+    logger.error(error.toString());
+
+    return next(error);
+  }
+};
+
 const createProject = async (req, res, next) => {
   try {
     const { title } = req.body;
@@ -74,7 +96,7 @@ const deleteProject = async (req, res, next) => {
       await User.findByIdAndUpdate(
         userId,
         { $pull: { projects: projectId } },
-        { session }
+        { session },
       );
     });
 
@@ -89,6 +111,7 @@ const deleteProject = async (req, res, next) => {
 };
 
 module.exports = {
+  getAllProjects,
   createProject,
   editProject,
   deleteProject,
