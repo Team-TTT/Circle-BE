@@ -27,7 +27,7 @@ const initLoaders = async (app) => {
 
   app.use((err, req, res, next) => {
     const error =
-      process.env.NODE_ENV === "development"
+      process.env.NODE_ENV === "development" || err.status
         ? err
         : new Error("Internal server error");
 
