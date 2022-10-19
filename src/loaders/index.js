@@ -31,7 +31,7 @@ const initLoaders = async (app) => {
         ? err
         : new Error("Internal server error");
 
-    res.status(err.status || 500).json(error);
+    res.status(err.status || 500).json({ message: error.message });
   });
 
   // eslint-disable-next-line prettier/prettier

@@ -46,10 +46,9 @@ const editProject = async (req, res, next) => {
       return next(createError(400, BAD_REQUEST));
     }
 
-    await Project.findOneAndUpdate(
-      { _id: projectId, owner: userId },
-      { title }
-    );
+    await Project.findOneAndUpdate({ _id: projectId, owner: userId }, { title })
+      .lean()
+      .exec();
 
     return res.json({ result: SUCCESS });
   } catch (error) {
