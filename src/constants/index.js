@@ -3,6 +3,7 @@ module.exports = {
     SUCCESS: "success",
     UNAUTHORIZED: "Unauthorized",
     INVALID_INPUT: "Invalid input",
+    INVALID_EMAIL: "Please fill a valid email address",
     LIMITED_PROJECT: "The number of projects has reached the limit",
     BAD_REQUEST: "Bad request",
   },
