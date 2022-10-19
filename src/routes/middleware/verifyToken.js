@@ -1,5 +1,5 @@
 const createError = require("http-errors");
-const { getAuth } = require("firebase-admin");
+const { admin } = require("../../../configs/firebase.config");
 
 const logger = require("../../../libs/logger");
 const { UNAUTHORIZED } = require("../../constants");
@@ -7,10 +7,9 @@ const { UNAUTHORIZED } = require("../../constants");
 const verifyToken = async (req, res, next) => {
   try {
     const sessionCookie = req.cookies.session;
-    const decodedClaims = await getAuth().verifySessionCookie(
-      sessionCookie,
-      true
-    );
+    const decodedClaims = await admin
+      .auth()
+      .verifySessionCookie(sessionCookie, true);
 
     req.user = decodedClaims;
 
