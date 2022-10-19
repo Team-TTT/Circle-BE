@@ -11,6 +11,6 @@ router
   .get(verifyToken, userController.getUser)
   .post(createSessionCookie, userController.findOrCreateUser);
 
-router.route("/logout").post(verifyToken, userController.deleteSessioncookie);
+router.route("/logout").post(verifyToken, userController.deleteSessionCookie);
 
 module.exports = router;
