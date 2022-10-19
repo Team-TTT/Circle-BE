@@ -40,12 +40,16 @@ const editProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const { title } = req.body;
+    const { _id: userId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId) || title === undefined) {
       return next(createError(400, BAD_REQUEST));
     }
 
-    await Project.findByIdAndUpdate(projectId, { title });
+    await Project.findOneAndUpdate(
+      { _id: projectId, owner: userId },
+      { title }
+    );
 
     return res.json({ result: SUCCESS });
   } catch (error) {
