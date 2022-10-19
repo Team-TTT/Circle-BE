@@ -2,8 +2,8 @@ const express = require("express");
 
 const router = express.Router();
 
-const verifyToken = require("./middleware/verifyToken");
-const createSessionCookie = require("./middleware/createSessionCookie");
+const verifyToken = require("./middlewares/verifyToken");
+const createSessionCookie = require("./middlewares/createSessionCookie");
 const userController = require("./controllers/auth.controller");
 
 router

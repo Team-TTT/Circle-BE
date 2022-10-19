@@ -1,5 +1,5 @@
 const createError = require("http-errors");
-const { admin } = require("../../../configs/firebase.config");
+const { admin } = require("../../../config/firebase.config");
 
 const logger = require("../../../libs/logger");
 const { MESSAGE } = require("../../constants");
@@ -21,7 +21,7 @@ const createSessionCookie = async (req, res, next) => {
     const sessionCookie = await admin.auth().createSessionCookie(token, {
       expiresIn,
     });
-    const options = { maxAge: expiresIn, httpOnly: true, secure: true };
+    const options = { maxAge: expiresIn, httpOnly: false, secure: true };
 
     res.cookie("session", sessionCookie, options);
 

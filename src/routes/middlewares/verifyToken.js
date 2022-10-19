@@ -1,5 +1,5 @@
 const createError = require("http-errors");
-const { admin } = require("../../../configs/firebase.config");
+const { admin } = require("../../../config/firebase.config");
 
 const logger = require("../../../libs/logger");
 const { UNAUTHORIZED } = require("../../constants");

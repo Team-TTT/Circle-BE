@@ -6,8 +6,8 @@ const authRoute = require("./auth.route");
 const projectRoute = require("./project.route");
 const serviceRoute = require("./service.route");
 
-const setResponseHeader = require("./middleware/setResponseHeader");
-const verifyToken = require("./middleware/verifyToken");
+const setResponseHeader = require("./middlewares/setResponseHeader");
+const verifyToken = require("./middlewares/verifyToken");
 
 router.use(setResponseHeader);
 router.use("/auth", authRoute);
