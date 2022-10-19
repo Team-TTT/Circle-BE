@@ -59,20 +59,32 @@ const editProject = async (req, res, next) => {
 };
 
 const deleteProject = async (req, res, next) => {
+  const session = await mongoose.startSession();
+
   try {
     const { projectId } = req.params;
+    const { _id: userId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId)) {
       return next(createError(400, BAD_REQUEST));
     }
 
-    await Project.deleteOne({ _id: projectId });
+    await session.withTransaction(async () => {
+      await Project.deleteOne({ _id: projectId, owner: userId }, { session });
+      await User.findByIdAndUpdate(
+        userId,
+        { $pull: { projects: projectId } },
+        { session }
+      );
+    });
 
     return res.json({ result: SUCCESS });
   } catch (error) {
     logger.error(error.toString());
 
     return next(error);
+  } finally {
+    session.endSession();
   }
 };
 

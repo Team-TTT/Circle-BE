@@ -2,7 +2,33 @@ const createError = require("http-errors");
 const User = require("../../../models/User");
 
 const logger = require("../../../libs/logger");
-const { INVALID_INPUT } = require("../../constants");
+const { MESSAGE } = require("../../constants");
+
+const { INVALID_INPUT, SUCCESS } = MESSAGE;
+
+const getUser = async (req, res, next) => {
+  try {
+    const { email } = req.user;
+
+    if (!email) {
+      const error = createError(400, `${INVALID_INPUT}: email`);
+      logger.error(error.toString());
+
+      return next(error);
+    }
+
+    const data = await User.findOne({ email })
+      .lean()
+      .populate("projects")
+      .exec();
+
+    return res.json(data);
+  } catch (error) {
+    logger.error(error.toString());
+
+    return next(error);
+  }
+};
 
 const findOrCreateUser = async (req, res, next) => {
   try {
@@ -37,6 +63,14 @@ const findOrCreateUser = async (req, res, next) => {
   }
 };
 
+const deleteSessionCookie = (req, res, next) => {
+  res.clearCookie("session");
+
+  return res.json({ result: SUCCESS });
+};
+
 module.exports = {
+  getUser,
   findOrCreateUser,
+  deleteSessionCookie,
 };
