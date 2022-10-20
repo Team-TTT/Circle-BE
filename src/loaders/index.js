@@ -26,19 +26,19 @@ const initLoaders = async (app) => {
   });
 
   app.use((err, req, res, next) => {
-    const error =
-      process.env.NODE_ENV === "development" || err.status
-        ? err
-        : new Error("Internal server error");
+    logger.error(err.toString());
+
+    const error = process.env.NODE_ENV === "development" || err.status
+      ? err
+      : new Error("Internal server error");
 
     res.status(err.status || 500).json({ message: error.message });
   });
 
-  // eslint-disable-next-line prettier/prettier
   go(
     app,
     loadHttpServer,
-    connectSocket
+    connectSocket,
   );
 };
 
