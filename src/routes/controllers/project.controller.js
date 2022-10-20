@@ -4,7 +4,7 @@ const Project = require("../../../models/Project");
 const User = require("../../../models/User");
 
 const logger = require("../../../libs/logger");
-const { generateDbSecretKey } = require("../../utils/crypto");
+const { generateDbSecretKey, getUserSecretKey } = require("../../utils/crypto");
 const { MESSAGE, LIMITED_PROJECT_COUNT } = require("../../constants");
 
 const { LIMITED_PROJECT, BAD_REQUEST, SUCCESS } = MESSAGE;
@@ -51,6 +51,30 @@ const createProject = async (req, res, next) => {
     await User.findByIdAndUpdate(userId, { $push: { projects: projectId } });
 
     return res.json({ _id: projectId });
+  } catch (error) {
+    logger.error(error.toString());
+
+    return next(error);
+  }
+};
+
+const getProject = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const { _id: userId } = req.user;
+
+    if (!mongoose.isValidObjectId(projectId)) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    const project = await Project
+      .findOne({ _id: projectId, owner: userId })
+      .lean()
+      .exec();
+
+    project.secret_key = getUserSecretKey(project.secret_key);
+
+    return res.json(project);
   } catch (error) {
     logger.error(error.toString());
 
@@ -113,6 +137,7 @@ const deleteProject = async (req, res, next) => {
 module.exports = {
   getAllProjects,
   createProject,
+  getProject,
   editProject,
   deleteProject,
 };

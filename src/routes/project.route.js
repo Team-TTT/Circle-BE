@@ -11,6 +11,7 @@ router
 
 router
   .route("/:projectId")
+  .get(projectController.getProject)
   .put(projectController.editProject)
   .delete(projectController.deleteProject);
 

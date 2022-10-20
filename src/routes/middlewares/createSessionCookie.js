@@ -1,5 +1,5 @@
 const createError = require("http-errors");
-const { admin } = require("../../../configs/firebase.config");
+const { admin } = require("../../../config/firebase.config");
 
 const logger = require("../../../libs/logger");
 const { MESSAGE } = require("../../constants");
@@ -8,20 +8,23 @@ const { UNAUTHORIZED } = MESSAGE;
 
 const createSessionCookie = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    const { authorization } = req.headers;
+    const token = authorization.split(" ")[1];
 
     if (!token) {
-      const error = createError(401, UNAUTHORIZED);
-      logger.error(error.toString());
-
-      return next(error);
+      return next(createError(401, UNAUTHORIZED));
     }
 
     const expiresIn = 60 * 60 * 24 * 5 * 1000;
-    const sessionCookie = await admin.auth().createSessionCookie(token, {
-      expiresIn,
-    });
-    const options = { maxAge: expiresIn, httpOnly: true, secure: true };
+    const sessionCookie = await admin
+      .auth()
+      .createSessionCookie(token, { expiresIn });
+
+    const options = {
+      maxAge: expiresIn,
+      httpOnly: false,
+      secure: true,
+    };
 
     res.cookie("session", sessionCookie, options);
 
