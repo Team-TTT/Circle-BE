@@ -11,13 +11,11 @@ const getUser = async (req, res, next) => {
     const { email } = req.user;
 
     if (!email) {
-      const error = createError(400, `${INVALID_INPUT}: email`);
-      logger.error(error.toString());
-
-      return next(error);
+      return next(createError(400, `${INVALID_INPUT}: email`));
     }
 
-    const data = await User.findOne({ email })
+    const data = await User
+      .findOne({ email })
       .lean()
       .populate("projects")
       .exec();
@@ -35,13 +33,13 @@ const findOrCreateUser = async (req, res, next) => {
     const { email, displayName, profile_url: profileUrl } = req.body;
 
     if (!email) {
-      const error = createError(400, `${INVALID_INPUT}: email`);
-      logger.error(error.toString());
-
-      return next(error);
+      return next(createError(400, `${INVALID_INPUT}: email`));
     }
 
-    const existUser = await User.findOne({ email }).lean().exec();
+    const existUser = await User
+      .findOne({ email })
+      .lean()
+      .exec();
 
     if (existUser) {
       return res.json(existUser);

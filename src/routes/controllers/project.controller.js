@@ -64,20 +64,17 @@ const getProject = async (req, res, next) => {
     const { _id: userId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId)) {
-      const error = createError(400, BAD_REQUEST);
-      logger.error(error.toString());
-
-      return next(error);
+      return next(createError(400, BAD_REQUEST));
     }
 
-    const project = await Project.findOne({ _id: projectId, owner: userId })
+    const project = await Project
+      .findOne({ _id: projectId, owner: userId })
       .lean()
       .exec();
 
-    return res.json({
-      ...project,
-      secret_key: getUserSecretKey(project.secret_key),
-    });
+    project.secret_key = getUserSecretKey(project.secret_key);
+
+    return res.json(project);
   } catch (error) {
     logger.error(error.toString());
 
