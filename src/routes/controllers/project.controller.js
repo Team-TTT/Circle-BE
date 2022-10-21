@@ -11,22 +11,20 @@ const { LIMITED_PROJECT, BAD_REQUEST, SUCCESS } = MESSAGE;
 
 const getAllProjects = async (req, res, next) => {
   try {
-    const { _id: userId } = req.user;
+    const { providerId } = req.user;
 
-    if (!mongoose.isValidObjectId(userId) || !userId) {
+    if (!mongoose.isValidObjectId(providerId) || !providerId) {
       return next(createError(400, BAD_REQUEST));
     }
 
     const data = await User
-      .findById(userId)
+      .findOne({ providerId })
       .lean()
       .populate("projects")
       .exec();
 
     return res.json(data.projects);
   } catch (error) {
-    logger.error(error.toString());
-
     return next(error);
   }
 };
@@ -34,7 +32,7 @@ const getAllProjects = async (req, res, next) => {
 const createProject = async (req, res, next) => {
   try {
     const { title } = req.body;
-    const { _id: userId, projects: userProjects } = req.user;
+    const { providerId, projects: userProjects } = req.user;
     const projectCount = userProjects.length;
 
     if (projectCount > LIMITED_PROJECT_COUNT) {
@@ -43,17 +41,18 @@ const createProject = async (req, res, next) => {
 
     const newProject = {
       secret_key: generateDbSecretKey(),
-      owner: userId,
+      owner: providerId,
       title,
     };
 
     const { _id: projectId } = await Project.create(newProject);
-    await User.findByIdAndUpdate(userId, { $push: { projects: projectId } });
+    await User.findOneAndUpdate(
+      { providerId },
+      { $push: { projects: projectId } },
+    );
 
     return res.json({ _id: projectId });
   } catch (error) {
-    logger.error(error.toString());
-
     return next(error);
   }
 };
@@ -61,14 +60,14 @@ const createProject = async (req, res, next) => {
 const getProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
-    const { _id: userId } = req.user;
+    const { providerId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId)) {
       return next(createError(400, BAD_REQUEST));
     }
 
     const project = await Project
-      .findOne({ _id: projectId, owner: userId })
+      .findOne({ _id: projectId, owner: providerId })
       .lean()
       .exec();
 
@@ -76,8 +75,6 @@ const getProject = async (req, res, next) => {
 
     return res.json(project);
   } catch (error) {
-    logger.error(error.toString());
-
     return next(error);
   }
 };
@@ -86,13 +83,13 @@ const editProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const { title } = req.body;
-    const { _id: userId } = req.user;
+    const { providerId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId) || title === undefined) {
       return next(createError(400, BAD_REQUEST));
     }
 
-    await Project.findOneAndUpdate({ _id: projectId, owner: userId }, { title })
+    await Project.findOneAndUpdate({ projectId, owner: providerId }, { title })
       .lean()
       .exec();
 
@@ -109,16 +106,16 @@ const deleteProject = async (req, res, next) => {
 
   try {
     const { projectId } = req.params;
-    const { _id: userId } = req.user;
+    const { providerId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId)) {
       return next(createError(400, BAD_REQUEST));
     }
 
     await session.withTransaction(async () => {
-      await Project.deleteOne({ _id: projectId, owner: userId }, { session });
-      await User.findByIdAndUpdate(
-        userId,
+      await Project.deleteOne({ projectId, owner: providerId }, { session });
+      await User.findByOneAndUpdate(
+        { providerId },
         { $pull: { projects: projectId } },
         { session },
       );

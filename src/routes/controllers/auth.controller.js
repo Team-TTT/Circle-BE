@@ -22,8 +22,6 @@ const getUser = async (req, res, next) => {
 
     return res.json(data);
   } catch (error) {
-    logger.error(error.toString());
-
     return next(error);
   }
 };
@@ -55,8 +53,6 @@ const findOrCreateUser = async (req, res, next) => {
 
     return res.json(createdUser);
   } catch (error) {
-    logger.error(error.toString());
-
     return next(error);
   }
 };

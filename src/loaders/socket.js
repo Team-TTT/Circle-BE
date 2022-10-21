@@ -33,7 +33,6 @@ const connectSocket = (server) => {
     const { address } = socket.handshake;
     logger.info(`user(IPv6: ${address}) is connected`);
 
-    // eslint-disable-next-line prettier/prettier
     go(
       socket,
       joinAndLeaveRoom,

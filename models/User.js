@@ -9,17 +9,18 @@ const validateEmail = (email) => {
 };
 
 const userSchema = new mongoose.Schema({
+  providerId: {
+    type: String,
+    unique: true,
+    index: true,
+    required: true,
+  },
   email: {
     type: String,
     unique: true,
     index: true,
     required: true,
-    validate: validateEmail,
-    match: [
-      // eslint-disable-next-line no-useless-escape
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      MESSAGE.INVALID_EMAIL,
-    ],
+    validate: [validateEmail, MESSAGE.INVALID_EMAIL],
   },
   displayName: { type: String, required: true },
   profile_url: { type: String },

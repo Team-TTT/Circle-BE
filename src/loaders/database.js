@@ -22,7 +22,7 @@ const loadDatabase = async () => {
       } else {
         logger.info("Successfully connected to mongoDB");
       }
-    }
+    },
   );
 };
 

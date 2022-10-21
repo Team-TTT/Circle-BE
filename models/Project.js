@@ -15,7 +15,7 @@ const ProjectSchema = new mongoose.Schema(
   {
     secret_key: { type: SecretKeySchema, required: true },
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       required: true,
       ref: "User",
     },
@@ -27,7 +27,7 @@ const ProjectSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Project", ProjectSchema);
