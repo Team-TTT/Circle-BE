@@ -1,7 +1,6 @@
 const createError = require("http-errors");
 const { admin } = require("../../../config/firebase.config");
 
-const logger = require("../../../libs/logger");
 const { UNAUTHORIZED } = require("../../constants");
 
 const User = require("../../../models/User");
@@ -24,8 +23,6 @@ const verifyToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    logger.error(error.toString());
-
     next(createError(401, UNAUTHORIZED));
   }
 };
