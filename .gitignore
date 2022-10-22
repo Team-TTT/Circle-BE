@@ -2,7 +2,7 @@
 /node_modules
 
 #config
-/configs/secret
+/config/secret
 
 # misc
 .env

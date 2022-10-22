@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const express = require("express");
 
 const router = express.Router();
@@ -6,9 +7,9 @@ const authRoute = require("./auth.route");
 const projectRoute = require("./project.route");
 const serviceRoute = require("./service.route");
 
-const setResponseHeader = require("./middleware/setResponseHeader");
-const verifyToken = require("./middleware/verifyToken");
-const setResponseServiceHeader = require("./middleware/setResponseServiceHeader");
+const setResponseHeader = require("./middlewares/setResponseHeader");
+const verifyToken = require("./middlewares/verifyToken");
+const setResponseServiceHeader = require("./middlewares/setResponseServiceHeader");
 
 router.use("/projects/:projectId/service/auth", setResponseServiceHeader, serviceRoute);
 router.use(setResponseHeader);
