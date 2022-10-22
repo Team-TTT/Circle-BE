@@ -3,11 +3,10 @@ const { Server } = require("socket.io");
 const logger = require("../../../libs/logger");
 const { go, chain } = require("../../utils/fp");
 const {
-  onJoinRoomHandle,
-  onLeaveRoomHandle,
-  onCalleesHandle,
-  onCallerHandle,
-  onDisconnectionHandle,
+  handleOnJoinRoom,
+  handleOnCallerToCallee,
+  handleOnCalleeToCaller,
+  handleOnDisconnection,
 } = require("./controller");
 
 const connectSocket = chain((server) => {
@@ -22,12 +21,11 @@ const connectSocket = chain((server) => {
     logger.info(`user(${socket.id}) is connected`);
 
     go(
-      { socket, io },
-      onJoinRoomHandle,
-      onLeaveRoomHandle,
-      onCalleesHandle,
-      onCallerHandle,
-      onDisconnectionHandle,
+      { socket },
+      handleOnJoinRoom,
+      handleOnCallerToCallee,
+      handleOnCalleeToCaller,
+      handleOnDisconnection,
     );
   });
 });
