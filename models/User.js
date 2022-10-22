@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     validate: [validateEmail, MESSAGE.INVALID_EMAIL],
   },
   displayName: { type: String, required: true },
-  profile_url: { type: String },
+  photoUrl: { type: String },
   projects: [
     {
       type: mongoose.Schema.Types.ObjectId,

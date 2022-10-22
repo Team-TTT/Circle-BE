@@ -2,8 +2,10 @@ const express = require("express");
 
 const router = express.Router();
 
-router.route("/").get((req, res, next) => {
-  res.json("서비스 작업 예정");
-});
+const projectController = require("./controllers/project.controller");
+
+router
+  .route("/")
+  .get(projectController.getProject);
 
 module.exports = router;

@@ -13,13 +13,22 @@ const SecretKeySchema = new mongoose.Schema({
 
 const ProjectSchema = new mongoose.Schema(
   {
-    secret_key: { type: SecretKeySchema, required: true },
+    secretKey: { type: SecretKeySchema, required: true },
     owner: {
       type: String,
       required: true,
       ref: "User",
     },
-    title: { type: String, required: true },
+    _id: { type: mongoose.Types.ObjectId },
+    title: {
+      type: String,
+      required: true,
+      validate(value) {
+        if (value.length > 15) {
+          throw new Error();
+        }
+      },
+    },
     channels: [
       {
         type: mongoose.Schema.Types.ObjectId,

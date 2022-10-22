@@ -26,7 +26,7 @@ const initLoaders = async (app) => {
   });
 
   app.use((err, req, res, next) => {
-    logger.error(err.toString());
+    logger.error(err.stack);
 
     const error = process.env.NODE_ENV === "development" || err.status
       ? err

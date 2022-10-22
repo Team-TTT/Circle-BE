@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const createError = require("http-errors");
 const User = require("../../../models/User");
 
@@ -28,7 +29,12 @@ const getUser = async (req, res, next) => {
 
 const findOrCreateUser = async (req, res, next) => {
   try {
-    const { email, displayName, profile_url: profileUrl } = req.body;
+    const {
+      email,
+      displayName,
+      photoUrl,
+      uid: providerId,
+    } = req.body;
 
     if (!email) {
       return next(createError(400, `${INVALID_INPUT}: email`));
@@ -46,7 +52,8 @@ const findOrCreateUser = async (req, res, next) => {
     const newUser = {
       email,
       displayName,
-      profileUrl,
+      photoUrl,
+      providerId,
     };
     const createdUser = await User.create(newUser);
     logger.info(`(User.create.createdUser) ${JSON.stringify(createdUser)}`);
