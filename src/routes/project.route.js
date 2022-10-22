@@ -20,4 +20,8 @@ router
   .route("/:projectId/channels")
   .post(channelController.createChannel);
 
+router
+  .route("/:projectId/channels/:channelId")
+  .put(channelController.editChannel);
+
 module.exports = router;
