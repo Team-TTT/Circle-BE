@@ -6,7 +6,7 @@ const Channel = require("../../../models/Channel");
 
 const { MESSAGE, LIMITED_CHANNEL_COUNT } = require("../../constants");
 
-const { LIMITED_CHANNEL, BAD_REQUEST } = MESSAGE;
+const { LIMITED_CHANNEL, BAD_REQUEST, SUCCESS } = MESSAGE;
 
 const createChannel = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -43,6 +43,27 @@ const createChannel = async (req, res, next) => {
     return res.json({ id: channelId });
   } catch (error) {
     return next(error);
+  }
+};
+
+const editChannel = async (req, res, next) => {
+  try {
+    const { title, description, isActive } = req.body;
+    const { channelId } = req.params;
+
+    if (!mongoose.isValidObjectId(channelId)) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    await Channel
+      .findByIdAndUpdate(
+        channelId,
+        { title, description, isActive },
+      );
+
+    return res.json({ result: SUCCESS });
+  } catch (error) {
+    return next(error);
   } finally {
     session.endSession();
   }
@@ -50,4 +71,5 @@ const createChannel = async (req, res, next) => {
 
 module.exports = {
   createChannel,
+  editChannel,
 };
