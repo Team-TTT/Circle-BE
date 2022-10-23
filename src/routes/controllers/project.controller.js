@@ -161,7 +161,7 @@ const showServiceProject = async (req, res, next) => {
       return res.json(serviceProject);
     }
 
-    return res.json({ result: UNAUTHORIZED });
+    return res.status(401).json({ result: UNAUTHORIZED });
   } catch (error) {
     return next(error);
   }
