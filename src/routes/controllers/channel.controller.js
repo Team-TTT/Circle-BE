@@ -43,6 +43,8 @@ const createChannel = async (req, res, next) => {
     return res.json({ id: channelId });
   } catch (error) {
     return next(error);
+  } finally {
+    session.endSession();
   }
 };
 
