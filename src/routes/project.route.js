@@ -22,6 +22,7 @@ router
 
 router
   .route("/:projectId/channels/:channelId")
-  .put(channelController.editChannel);
+  .put(channelController.editChannel)
+  .delete(channelController.deleteChannel);
 
 module.exports = router;

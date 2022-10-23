@@ -64,6 +64,34 @@ const editChannel = async (req, res, next) => {
     return res.json({ result: SUCCESS });
   } catch (error) {
     return next(error);
+  }
+};
+
+const deleteChannel = async (req, res, next) => {
+  const session = await mongoose.startSession();
+
+  try {
+    const { projectId, channelId } = req.params;
+
+    if (
+      !mongoose.isValidObjectId(projectId)
+      || !mongoose.isValidObjectId(channelId)
+    ) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    await session.withTransaction(async () => {
+      await Channel.findByIdAndDelete(channelId, { session });
+      await Project.findByIdAndUpdate(
+        projectId,
+        { $pull: { channels: channelId } },
+        { session },
+      );
+    });
+
+    return res.json({ result: SUCCESS });
+  } catch (error) {
+    return next(error);
   } finally {
     session.endSession();
   }
@@ -72,4 +100,5 @@ const editChannel = async (req, res, next) => {
 module.exports = {
   createChannel,
   editChannel,
+  deleteChannel,
 };
