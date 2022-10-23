@@ -10,8 +10,6 @@ module.exports = {
   CHANNEL: {
     JOIN: "join",
     LEAVE: "leave",
-    MAX_USER_COUNT: 4,
-    FULL_ROOM: "room-full",
     OFFER: "offer",
     ANSWER: "answer",
     EXISTED_CALLEES: "users",
