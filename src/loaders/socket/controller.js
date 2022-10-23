@@ -2,75 +2,79 @@ const { CHANNEL } = require("../../constants");
 const logger = require("../../../libs/logger");
 const { chain } = require("../../utils/fp");
 
-const usersMap = new Map();
-const socketToRoomMap = new Map();
+const users = {};
+const socketToRoom = {};
 
 const handleOnJoinRoom = chain(({ socket }) => {
   socket.on(CHANNEL.JOIN, (channelId) => {
-    socket.join(channelId);
+    logger.info("유저 가 방에 입장: ", users[channelId]?.length || 0);
+    // Todo: 콘솔 삭제
+    console.log(channelId);
+    if (users[channelId]) {
+      const { length } = users[channelId];
 
-    logger.info(`${socket.id}가 ${channelId}방을 입장 하였습니다. 기존 유저수: ${usersMap.get(channelId)?.length || 0}명`);
-
-    if (usersMap.has(channelId)) {
-      const room = usersMap.get(channelId);
-
-      if (room.length === CHANNEL.MAX_USER_COUNT) {
+      if (length === CHANNEL.MAX_USER_COUNT) {
         socket.emit(CHANNEL.FULL_ROOM);
-
         return;
       }
 
-      room.push(socket.id);
-      usersMap.set(channelId, room);
+      users[channelId].push(socket.id);
     } else {
-      usersMap.set(channelId, [socket.id]);
+      users[channelId] = [socket.id];
     }
 
-    socketToRoomMap.set(socket.id, channelId);
+    socketToRoom[socket.id] = channelId;
 
-    const calleesInThisChannel = usersMap.get(channelId).filter(
+    const calleesInThisChannel = users[channelId].filter(
       (id) => id !== socket.id,
     );
+    // Todo: 콘솔 삭제
+    console.log("기존 콜리스", calleesInThisChannel);
+    console.log("유저 접속후 채팅방", users[channelId]);
 
     socket.emit(CHANNEL.EXISTED_CALLEES, calleesInThisChannel);
   });
 });
 
-const handleOnCallerToCallee = chain(({ socket }) => {
+const handleOnCallerToCallee = chain(({ socket, io }) => {
   socket.on(CHANNEL.OFFER, ({ callerId, calleeId, signal }) => {
-    socket.to(calleeId).emit(CHANNEL.USER_JOIN, {
+    // Todo: 콘솔 삭제
+    console.log("callerTocalle_offeer");
+    io.to(calleeId).emit(CHANNEL.USER_JOIN, {
       signal,
       callerId,
     });
   });
 });
 
-const handleOnCalleeToCaller = chain(({ socket }) => {
-  socket.on(CHANNEL.ANSWER, (payload) => {
-    socket.to(payload.callerId).emit(CHANNEL.RETURN_SIGNAL, {
-      signal: payload.signal,
-      id: socket.id,
+const handleOnCalleeToCaller = chain(({ socket, io }) => {
+  socket.on(CHANNEL.ANSWER, ({ callerId, signal }) => {
+    // Todo: 콘솔 삭제
+    console.log("calleeToCaller return then signal");
+
+    io.to(callerId).emit(CHANNEL.RETURN_SIGNAL, {
+      signal,
+      calleeId: socket.id,
     });
   });
 });
 
 const handleOnDisconnection = chain(({ socket }) => {
   socket.on("disconnect", () => {
-    const channelId = socketToRoomMap.get(socket.id);
-    const room = usersMap.get(channelId);
+    const channelId = socketToRoom[socket.id];
 
-    if (!room) {
-      return;
+    logger.info(`${socket.id}가 ${channelId}방을 퇴장하였습니다`);
+
+    const room = users[channelId];
+
+    if (room) {
+      users[channelId] = room.filter((id) => id !== socket.id);
     }
 
-    usersMap.set(channelId, room.filter((id) => id !== socket.id));
+    // Todo: 콘솔 삭제
+    console.log(users[channelId]);
 
-    socket.to(channelId).emit(CHANNEL.USER_DISCONNECT, socket.id);
-
-    logger.info(`user(${socket.id}}) disconnected ${usersMap.get(channelId)?.length}명 남음`);
-    logger.info(`${socket.id}가 ${channelId}방을 퇴장 하였습니다.
-    ${usersMap.get(channelId)?.length || 0}명 남음
-    `);
+    socket.broadcast.emit(CHANNEL.USER_DISCONNECT, socket.id);
   });
 });
 

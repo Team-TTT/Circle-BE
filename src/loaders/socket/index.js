@@ -21,7 +21,7 @@ const connectSocket = chain((server) => {
     logger.info(`user(${socket.id}) is connected`);
 
     go(
-      { socket },
+      { socket, io },
       handleOnJoinRoom,
       handleOnCallerToCallee,
       handleOnCalleeToCaller,
