@@ -49,11 +49,13 @@ const createProject = async (req, res, next) => {
 
     await session.withTransaction(async () => {
       await Project.create([newProject], { session });
-      await User.findByIdAndUpdate(
-        userId,
-        { $push: { projects: projectId } },
-        { session },
-      );
+      await User
+        .findByIdAndUpdate(
+          userId,
+          { $push: { projects: projectId } },
+          { session },
+        )
+        .exec();
     });
 
     return res.json({ id: projectId });
@@ -73,7 +75,8 @@ const getProject = async (req, res, next) => {
       return next(createError(400, BAD_REQUEST));
     }
     // Todo: req.user에서 해당 project만 가져오기.(미정)
-    const project = await Project.findOne({ _id: projectId, owner: userId })
+    const project = await Project
+      .findOne({ _id: projectId, owner: userId })
       .lean()
       .exec();
 
@@ -91,12 +94,13 @@ const editProject = async (req, res, next) => {
     const { projectId } = req.params;
     const { _id: userId } = req.user;
 
-    if (!mongoose.isValidObjectId(projectId) || title === undefined) {
+    if (!mongoose.isValidObjectId(projectId)
+      || title === undefined) {
       return next(createError(400, BAD_REQUEST));
     }
 
-    await Project.findOneAndUpdate({ projectId, owner: userId }, { title })
-      .lean()
+    await Project
+      .findOneAndUpdate({ projectId, owner: userId }, { title })
       .exec();
 
     return res.json({ result: SUCCESS });
@@ -118,11 +122,13 @@ const deleteProject = async (req, res, next) => {
 
     await session.withTransaction(async () => {
       await Project.deleteOne({ projectId, owner: userId }, { session });
-      await User.findByIdAndUpdate(
-        userId,
-        { $pull: { projects: projectId } },
-        { session },
-      );
+      await User
+        .findByIdAndUpdate(
+          userId,
+          { $pull: { projects: projectId } },
+          { session },
+        )
+        .exec();
     });
 
     return res.json({ result: SUCCESS });
@@ -143,7 +149,6 @@ const showServiceProject = async (req, res, next) => {
 
     const serviceProject = await Project
       .findById(projectId)
-      .lean()
       .populate()
       .exec();
 
