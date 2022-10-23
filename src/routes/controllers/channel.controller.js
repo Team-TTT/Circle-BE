@@ -64,6 +64,8 @@ const editChannel = async (req, res, next) => {
     return res.json({ result: SUCCESS });
   } catch (error) {
     return next(error);
+  } finally {
+    session.endSession();
   }
 };
 
