@@ -10,13 +10,6 @@ const handleOnJoinRoom = chain(({ socket }) => {
     logger.info(`${socket.id}유저 가 ${channelId}방에 입장`);
 
     if (users[channelId]) {
-      const { length } = users[channelId];
-
-      if (length === CHANNEL.MAX_USER_COUNT) {
-        socket.emit(CHANNEL.FULL_ROOM);
-        return;
-      }
-
       users[channelId].push(socket.id);
     } else {
       users[channelId] = [socket.id];
