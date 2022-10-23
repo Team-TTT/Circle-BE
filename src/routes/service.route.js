@@ -6,6 +6,6 @@ const projectController = require("./controllers/project.controller");
 
 router
   .route("/")
-  .get(projectController.getProject);
+  .post(projectController.showServiceProject);
 
 module.exports = router;
