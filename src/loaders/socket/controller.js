@@ -7,9 +7,8 @@ const socketToRoom = {};
 
 const handleOnJoinRoom = chain(({ socket }) => {
   socket.on(CHANNEL.JOIN, (channelId) => {
-    logger.info("유저 가 방에 입장: ", users[channelId]?.length || 0);
-    // Todo: 콘솔 삭제
-    console.log(channelId);
+    logger.info(`${socket.id}유저 가 ${channelId}방에 입장`);
+
     if (users[channelId]) {
       const { length } = users[channelId];
 
@@ -28,9 +27,6 @@ const handleOnJoinRoom = chain(({ socket }) => {
     const calleesInThisChannel = users[channelId].filter(
       (id) => id !== socket.id,
     );
-    // Todo: 콘솔 삭제
-    console.log("기존 콜리스", calleesInThisChannel);
-    console.log("유저 접속후 채팅방", users[channelId]);
 
     socket.emit(CHANNEL.EXISTED_CALLEES, calleesInThisChannel);
   });
@@ -38,8 +34,6 @@ const handleOnJoinRoom = chain(({ socket }) => {
 
 const handleOnCallerToCallee = chain(({ socket, io }) => {
   socket.on(CHANNEL.OFFER, ({ callerId, calleeId, signal }) => {
-    // Todo: 콘솔 삭제
-    console.log("callerTocalle_offeer");
     io.to(calleeId).emit(CHANNEL.USER_JOIN, {
       signal,
       callerId,
@@ -49,9 +43,6 @@ const handleOnCallerToCallee = chain(({ socket, io }) => {
 
 const handleOnCalleeToCaller = chain(({ socket, io }) => {
   socket.on(CHANNEL.ANSWER, ({ callerId, signal }) => {
-    // Todo: 콘솔 삭제
-    console.log("calleeToCaller return then signal");
-
     io.to(callerId).emit(CHANNEL.RETURN_SIGNAL, {
       signal,
       calleeId: socket.id,
@@ -70,9 +61,6 @@ const handleOnDisconnection = chain(({ socket }) => {
     if (room) {
       users[channelId] = room.filter((id) => id !== socket.id);
     }
-
-    // Todo: 콘솔 삭제
-    console.log(users[channelId]);
 
     socket.broadcast.emit(CHANNEL.USER_DISCONNECT, socket.id);
   });

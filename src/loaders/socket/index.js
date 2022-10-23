@@ -1,6 +1,5 @@
 const { Server } = require("socket.io");
 
-const logger = require("../../../libs/logger");
 const { go, chain } = require("../../utils/fp");
 const {
   handleOnJoinRoom,
@@ -18,8 +17,6 @@ const connectSocket = chain((server) => {
   });
 
   io.on("connection", (socket) => {
-    logger.info(`user(${socket.id}) is connected`);
-
     go(
       { socket, io },
       handleOnJoinRoom,
