@@ -9,14 +9,14 @@ const { INVALID_INPUT, SUCCESS } = MESSAGE;
 
 const getUser = async (req, res, next) => {
   try {
-    const { email } = req.user;
+    const { uid: providerId } = req.user;
 
-    if (!email) {
-      return next(createError(400, `${INVALID_INPUT}: email`));
+    if (!providerId) {
+      return next(createError(400, INVALID_INPUT));
     }
 
     const data = await User
-      .findOne({ email })
+      .findOne({ providerId })
       .lean()
       .populate("projects")
       .exec();
@@ -36,12 +36,12 @@ const findOrCreateUser = async (req, res, next) => {
       uid: providerId,
     } = req.body;
 
-    if (!email) {
+    if (!providerId) {
       return next(createError(400, `${INVALID_INPUT}: email`));
     }
 
     const existUser = await User
-      .findOne({ email })
+      .findOne({ providerId })
       .lean()
       .exec();
 
