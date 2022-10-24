@@ -2,22 +2,22 @@ const { CHANNEL } = require("../../constants");
 const logger = require("../../../libs/logger");
 const { chain } = require("../../utils/fp");
 
-const users = {};
-const socketToRoom = {};
+const usersInRoom = {};
+const roomOfUser = {};
 
 const handleOnJoinRoom = chain(({ socket }) => {
   socket.on(CHANNEL.JOIN, (channelId) => {
     logger.info(`${socket.id}유저 가 ${channelId}방에 입장`);
 
-    if (users[channelId]) {
-      users[channelId].push(socket.id);
+    if (usersInRoom[channelId]) {
+      usersInRoom[channelId].push(socket.id);
     } else {
-      users[channelId] = [socket.id];
+      usersInRoom[channelId] = [socket.id];
     }
 
-    socketToRoom[socket.id] = channelId;
+    roomOfUser[socket.id] = channelId;
 
-    const calleesInThisChannel = users[channelId].filter(
+    const calleesInThisChannel = usersInRoom[channelId].filter(
       (id) => id !== socket.id,
     );
 
@@ -45,14 +45,14 @@ const handleOnCalleeToCaller = chain(({ socket, io }) => {
 
 const handleOnDisconnection = chain(({ socket }) => {
   socket.on("disconnect", () => {
-    const channelId = socketToRoom[socket.id];
+    const channelId = roomOfUser[socket.id];
 
     logger.info(`${socket.id}가 ${channelId}방을 퇴장하였습니다`);
 
-    const room = users[channelId];
+    const room = usersInRoom[channelId];
 
     if (room) {
-      users[channelId] = room.filter((id) => id !== socket.id);
+      usersInRoom[channelId] = room.filter((id) => id !== socket.id);
     }
 
     socket.broadcast.emit(CHANNEL.USER_DISCONNECT, socket.id);
