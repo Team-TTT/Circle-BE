@@ -13,7 +13,10 @@ const reduce = (fn, acc, iter) => {
 
 const go = (...args) => reduce((item, fn) => fn(item), args);
 
+const chain = (fn) => (target) => (fn(target), target);
+
 module.exports = {
   go,
   reduce,
+  chain,
 };
