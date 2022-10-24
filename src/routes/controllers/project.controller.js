@@ -141,7 +141,8 @@ const deleteProject = async (req, res, next) => {
 
 const showServiceProject = async (req, res, next) => {
   try {
-    const { projectId, secretKey: userSecretKey } = req.body;
+    const { projectId } = req.params;
+    const { secretKey: userSecretKey } = req.body;
 
     if (!mongoose.isValidObjectId(projectId)) {
       return next(createError(400, BAD_REQUEST));
