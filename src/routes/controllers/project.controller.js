@@ -150,7 +150,7 @@ const showServiceProject = async (req, res, next) => {
 
     const serviceProject = await Project
       .findById(projectId)
-      .populate()
+      .populate("channels")
       .exec();
 
     const validationResult = validateSecretKey(

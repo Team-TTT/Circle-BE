@@ -11,7 +11,7 @@ const setResponseHeader = require("./middlewares/setResponseHeader");
 const verifyToken = require("./middlewares/verifyToken");
 const setResponseServiceHeader = require("./middlewares/setResponseServiceHeader");
 
-router.use("/projects/:projectId/service/auth", setResponseServiceHeader, serviceRoute);
+router.use("/projects", setResponseServiceHeader, serviceRoute);
 router.use(setResponseHeader);
 router.use("/auth", authRoute);
 router.use("/projects", verifyToken, projectRoute);
