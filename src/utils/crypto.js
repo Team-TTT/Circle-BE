@@ -29,6 +29,7 @@ const validateSecretKey = (userSecretKey, dbSecreteKey) => {
   const iv = Buffer.from(stringIv, "hex");
   const key = Buffer.from(stringKey, "hex");
   const encrypted = Buffer.from(userSecretKey, "hex");
+
   const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
   const decrypted = decipher.update(encrypted);
 

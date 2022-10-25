@@ -12,10 +12,7 @@ const {
 const { MESSAGE, LIMITED_PROJECT_COUNT } = require("../../constants");
 
 const {
-  LIMITED_PROJECT,
-  BAD_REQUEST,
-  SUCCESS,
-  UNAUTHORIZED,
+  LIMITED_PROJECT, BAD_REQUEST, SUCCESS, UNAUTHORIZED,
 } = MESSAGE;
 
 const getAllProjects = async (req, res, next) => {
@@ -49,13 +46,11 @@ const createProject = async (req, res, next) => {
 
     await session.withTransaction(async () => {
       await Project.create([newProject], { session });
-      await User
-        .findByIdAndUpdate(
-          userId,
-          { $push: { projects: projectId } },
-          { session },
-        )
-        .exec();
+      await User.findByIdAndUpdate(
+        userId,
+        { $push: { projects: projectId } },
+        { session },
+      ).exec();
     });
 
     return res.json({ id: projectId });
@@ -75,8 +70,7 @@ const getProject = async (req, res, next) => {
       return next(createError(400, BAD_REQUEST));
     }
     // Todo: req.user에서 해당 project만 가져오기.(미정)
-    const project = await Project
-      .findOne({ _id: projectId, owner: userId })
+    const project = await Project.findOne({ _id: projectId, owner: userId })
       .lean()
       .exec();
 
@@ -94,14 +88,14 @@ const editProject = async (req, res, next) => {
     const { projectId } = req.params;
     const { _id: userId } = req.user;
 
-    if (!mongoose.isValidObjectId(projectId)
-      || title === undefined) {
+    if (!mongoose.isValidObjectId(projectId) || title === undefined) {
       return next(createError(400, BAD_REQUEST));
     }
 
-    await Project
-      .findOneAndUpdate({ projectId, owner: userId }, { title })
-      .exec();
+    await Project.findOneAndUpdate(
+      { projectId, owner: userId },
+      { title },
+    ).exec();
 
     return res.json({ result: SUCCESS });
   } catch (error) {
@@ -122,13 +116,11 @@ const deleteProject = async (req, res, next) => {
 
     await session.withTransaction(async () => {
       await Project.deleteOne({ projectId, owner: userId }, { session });
-      await User
-        .findByIdAndUpdate(
-          userId,
-          { $pull: { projects: projectId } },
-          { session },
-        )
-        .exec();
+      await User.findByIdAndUpdate(
+        userId,
+        { $pull: { projects: projectId } },
+        { session },
+      ).exec();
     });
 
     return res.json({ result: SUCCESS });
@@ -158,11 +150,11 @@ const showServiceProject = async (req, res, next) => {
       serviceProject.secretKey,
     );
 
-    if (validationResult) {
-      return res.json(serviceProject);
+    if (!validationResult) {
+      return res.status(401).json({ result: UNAUTHORIZED });
     }
 
-    return res.status(401).json({ result: UNAUTHORIZED });
+    return res.json(serviceProject);
   } catch (error) {
     return next(error);
   }
