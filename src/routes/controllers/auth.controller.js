@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 const createError = require("http-errors");
 const User = require("../../../models/User");
 
@@ -42,7 +41,6 @@ const findOrCreateUser = async (req, res, next) => {
 
     const existUser = await User
       .findOne({ providerId })
-      .lean()
       .exec();
 
     if (existUser) {

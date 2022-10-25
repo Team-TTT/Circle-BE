@@ -20,9 +20,10 @@ const createChannel = async (req, res, next) => {
       return next(createError(400, BAD_REQUEST));
     }
 
-    const selectedProject = await Project.findById(projectId)
-      .lean()
-      .populate("channels");
+    const selectedProject = await Project
+      .findById(projectId)
+      .populate("channels")
+      .exec();
 
     const channelCount = selectedProject.channels.length;
     if (channelCount > LIMITED_CHANNEL_COUNT) {
@@ -33,16 +34,20 @@ const createChannel = async (req, res, next) => {
       const newChannel = { _id: channelId, title, description };
 
       await Channel.create([newChannel], { session });
-      await Project.findByIdAndUpdate(
-        projectId,
-        { $push: { channels: channelId } },
-        { session },
-      );
+      await Project
+        .findByIdAndUpdate(
+          projectId,
+          { $push: { channels: channelId } },
+          { session },
+        )
+        .exec();
     });
 
     return res.json({ id: channelId });
   } catch (error) {
     return next(error);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -56,10 +61,12 @@ const editChannel = async (req, res, next) => {
     }
 
     await Channel
-      .findByIdAndUpdate(
-        channelId,
-        { title, description, isActive },
-      );
+      .findByIdAndUpdate(channelId, {
+        title,
+        description,
+        isActive,
+      })
+      .exec();
 
     return res.json({ result: SUCCESS });
   } catch (error) {
@@ -81,12 +88,16 @@ const deleteChannel = async (req, res, next) => {
     }
 
     await session.withTransaction(async () => {
-      await Channel.findByIdAndDelete(channelId, { session });
-      await Project.findByIdAndUpdate(
-        projectId,
-        { $pull: { channels: channelId } },
-        { session },
-      );
+      await Channel
+        .findByIdAndDelete(channelId, { session })
+        .exec();
+      await Project
+        .findByIdAndUpdate(
+          projectId,
+          { $pull: { channels: channelId } },
+          { session },
+        )
+        .exec();
     });
 
     return res.json({ result: SUCCESS });

@@ -4,10 +4,16 @@ const createError = require("http-errors");
 const Project = require("../../../models/Project");
 const User = require("../../../models/User");
 
-const { generateDbSecretKey, getUserSecretKey } = require("../../utils/crypto");
+const {
+  generateDbSecretKey,
+  getUserSecretKey,
+  validateSecretKey,
+} = require("../../utils/crypto");
 const { MESSAGE, LIMITED_PROJECT_COUNT } = require("../../constants");
 
-const { LIMITED_PROJECT, BAD_REQUEST, SUCCESS } = MESSAGE;
+const {
+  LIMITED_PROJECT, BAD_REQUEST, SUCCESS, UNAUTHORIZED,
+} = MESSAGE;
 
 const getAllProjects = async (req, res, next) => {
   try {
@@ -44,7 +50,7 @@ const createProject = async (req, res, next) => {
         userId,
         { $push: { projects: projectId } },
         { session },
-      );
+      ).exec();
     });
 
     return res.json({ id: projectId });
@@ -63,9 +69,8 @@ const getProject = async (req, res, next) => {
     if (!mongoose.isValidObjectId(projectId)) {
       return next(createError(400, BAD_REQUEST));
     }
-
-    const project = await Project
-      .findOne({ _id: projectId, owner: userId })
+    // Todo: req.user에서 해당 project만 가져오기.(미정)
+    const project = await Project.findOne({ _id: projectId, owner: userId })
       .lean()
       .exec();
 
@@ -87,10 +92,10 @@ const editProject = async (req, res, next) => {
       return next(createError(400, BAD_REQUEST));
     }
 
-    await Project
-      .findOneAndUpdate({ projectId, owner: userId }, { title })
-      .lean()
-      .exec();
+    await Project.findOneAndUpdate(
+      { projectId, owner: userId },
+      { title },
+    ).exec();
 
     return res.json({ result: SUCCESS });
   } catch (error) {
@@ -115,7 +120,7 @@ const deleteProject = async (req, res, next) => {
         userId,
         { $pull: { projects: projectId } },
         { session },
-      );
+      ).exec();
     });
 
     return res.json({ result: SUCCESS });
@@ -126,10 +131,40 @@ const deleteProject = async (req, res, next) => {
   }
 };
 
+const showServiceProject = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const { secretKey: userSecretKey } = req.body;
+
+    if (!mongoose.isValidObjectId(projectId)) {
+      return next(createError(400, BAD_REQUEST));
+    }
+
+    const serviceProject = await Project
+      .findById(projectId)
+      .populate("channels")
+      .exec();
+
+    const validationResult = validateSecretKey(
+      userSecretKey,
+      serviceProject.secretKey,
+    );
+
+    if (!validationResult) {
+      return res.status(401).json({ result: UNAUTHORIZED });
+    }
+
+    return res.json(serviceProject);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   getAllProjects,
   createProject,
   getProject,
   editProject,
   deleteProject,
+  showServiceProject,
 };

@@ -5,7 +5,7 @@ const router = express.Router();
 const projectController = require("./controllers/project.controller");
 
 router
-  .route("/")
-  .get(projectController.getProject);
+  .route("/:projectId/service/auth")
+  .post(projectController.showServiceProject);
 
 module.exports = router;
