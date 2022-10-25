@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const createError = require("http-errors");
+
 const Project = require("../../../models/Project");
 const User = require("../../../models/User");
 
@@ -21,10 +22,10 @@ const createProject = async (req, res, next) => {
   const session = await mongoose.startSession();
 
   try {
-    const projectId = mongoose.Types.ObjectId();
     const { title } = req.body;
     const { _id: userId, projects } = req.user;
     const projectCount = projects.length;
+    const projectId = mongoose.Types.ObjectId();
 
     if (projectCount > LIMITED_PROJECT_COUNT) {
       return next(createError(423, LIMITED_PROJECT));
@@ -78,8 +79,8 @@ const getProject = async (req, res, next) => {
 
 const editProject = async (req, res, next) => {
   try {
-    const { projectId } = req.params;
     const { title } = req.body;
+    const { projectId } = req.params;
     const { _id: userId } = req.user;
 
     if (!mongoose.isValidObjectId(projectId) || title === undefined) {
