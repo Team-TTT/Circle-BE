@@ -72,6 +72,7 @@ const getProject = async (req, res, next) => {
     // Todo: req.user에서 해당 project만 가져오기.(미정)
     const project = await Project.findOne({ _id: projectId, owner: userId })
       .lean()
+      .populate("channels")
       .exec();
 
     project.secretKey = getUserSecretKey(project.secretKey);

@@ -8,7 +8,7 @@ const { INVALID_INPUT, SUCCESS } = MESSAGE;
 
 const getUser = async (req, res, next) => {
   try {
-    const { uid: providerId } = req.user;
+    const { providerId } = req.user;
 
     if (!providerId) {
       return next(createError(400, INVALID_INPUT));
