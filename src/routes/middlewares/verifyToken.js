@@ -12,9 +12,8 @@ const verifyToken = async (req, res, next) => {
       .auth()
       .verifySessionCookie(sessionCookie, true);
 
-    req.user = decodedClaims;
+    const { uid: providerId } = decodedClaims;
 
-    const { uid: providerId } = req.user;
     req.user = await User
       .findOne({ providerId })
       .lean()
