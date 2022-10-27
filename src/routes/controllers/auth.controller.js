@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const User = require("../../../models/User");
 
+const { getUserSecretKey } = require("../../utils/crypto");
 const logger = require("../../../libs/logger");
 const { MESSAGE } = require("../../constants");
 
@@ -19,6 +20,14 @@ const getUser = async (req, res, next) => {
       .lean()
       .populate("projects")
       .exec();
+
+    const { projects } = data;
+
+    const mappedProjects = projects.map((project) => (
+      { ...project, secretKey: getUserSecretKey(project.secretKey) }
+    ));
+
+    data.projects = mappedProjects;
 
     return res.json(data);
   } catch (error) {
