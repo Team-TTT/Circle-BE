@@ -94,7 +94,7 @@ const editProject = async (req, res, next) => {
     }
 
     await Project.findOneAndUpdate(
-      { projectId, owner: userId },
+      { _id: projectId, owner: userId },
       { title },
     ).exec();
 
@@ -116,7 +116,7 @@ const deleteProject = async (req, res, next) => {
     }
 
     await session.withTransaction(async () => {
-      await Project.deleteOne({ projectId, owner: userId }, { session });
+      await Project.deleteOne({ _id: projectId, owner: userId }, { session });
       await User.findByIdAndUpdate(
         userId,
         { $pull: { projects: projectId } },

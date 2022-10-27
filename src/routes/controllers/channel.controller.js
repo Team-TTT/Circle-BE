@@ -12,7 +12,7 @@ const createChannel = async (req, res, next) => {
   const session = await mongoose.startSession();
 
   try {
-    const { title, description } = req.body;
+    const { title, description, isActive } = req.body;
     const { projectId } = req.params;
     const channelId = mongoose.Types.ObjectId();
 
@@ -31,7 +31,12 @@ const createChannel = async (req, res, next) => {
     }
 
     await session.withTransaction(async () => {
-      const newChannel = { _id: channelId, title, description };
+      const newChannel = {
+        _id: channelId,
+        title,
+        description,
+        isActive,
+      };
 
       await Channel.create([newChannel], { session });
       await Project
