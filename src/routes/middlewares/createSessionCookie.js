@@ -22,7 +22,7 @@ const createSessionCookie = async (req, res, next) => {
 
     const options = {
       maxAge: expiresIn,
-      httpOnly: false,
+      httpOnly: true,
       secure: true,
     };
 
