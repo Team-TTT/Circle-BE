@@ -4,13 +4,9 @@ const cookieParser = require("cookie-parser");
 
 const logger = require("../../libs/logger");
 const loadDatabase = require("./database");
-const loadHttpServer = require("./server");
-const connectSocket = require("./socket");
-const { go } = require("../utils/fp");
-
 const indexRouter = require("../routes/index");
 
-const initLoaders = async (app) => {
+const initAsyncApp = async (app) => {
   logger.info("app start");
 
   await loadDatabase();
@@ -35,11 +31,7 @@ const initLoaders = async (app) => {
     res.status(err.status || 500).json({ message: error.message });
   });
 
-  go(
-    app,
-    loadHttpServer,
-    connectSocket,
-  );
+  return app;
 };
 
-module.exports = initLoaders;
+module.exports = initAsyncApp;
