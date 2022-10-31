@@ -10,6 +10,7 @@ const {
 
 const connectSocket = chain((server) => {
   const io = new Server(server, {
+    path: "/circle-io",
     cors: {
       origin: "*",
       methods: ["GET", "POST"],
