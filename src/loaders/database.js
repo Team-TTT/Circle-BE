@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const logger = require("../../libs/logger");
 
-const loadDatabase = async () => {
+const loadDatabase = () => new Promise((res, rej) => {
   mongoose.connection.on("error", (error) => {
     logger.error(`Connection error: ${error.toString()}`);
   });
@@ -18,12 +18,13 @@ const loadDatabase = async () => {
       if (error) {
         logger.error(`Connecting error: ${error.toString()}`);
 
-        throw new Error("MongoDB initial connection failed");
+        rej(new Error("MongoDB initial connection failed"));
       } else {
         logger.info("Successfully connected to mongoDB");
+        res();
       }
     },
   );
-};
+});
 
 module.exports = loadDatabase;
