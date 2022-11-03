@@ -5,22 +5,19 @@ const express = require("express");
 const { expect } = require("chai");
 
 const initAsyncApp = require("../src/loaders/initAsyncApp");
-const { testDbConnecting, postLoginAndGetCookie } = require("./utils");
+const { testDbConnect, testDbDisConnect, postLoginAndGetCookie } = require("./utils");
 
 let server = null;
 
 describe("* open server", () => {
-  before(function(done) {
-    initAsyncApp(express()).then(async (app) => {
-      server = request.agent(app);
-      await testDbConnecting(process.env.MONGODB_TEST);
-      done();
-    });
+  before(async () => {
+    const app = await initAsyncApp(express());
+    server = request.agent(app);
+
+    await testDbConnect();
   });
 
-  after(function(done) {
-    mongoose.disconnect().then(done);
-  });
+  after(() => mongoose.disconnect());
 
   describe("Get /auth/users", () => {
     it("회원가입 하기", async () => {

@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const logger = require('../libs/logger');
 
 module.exports = {
-  testDbConnecting: async (DB_URI) => {
+  testDbConnect: async () => {
     await mongoose.disconnect();
-    await mongoose.connect(DB_URI);
+    await mongoose.connect(process.env.MONGODB_TEST, { dbName: process.env.MONGODB_TEST_DB_NAME });
     logger.info("Test database is connected");
   },
 
