@@ -5,7 +5,7 @@ const express = require("express");
 const { expect } = require("chai");
 
 const initAsyncApp = require("../src/loaders/initAsyncApp");
-const { testDbConnect, testDbDisConnect, postLoginAndGetCookie } = require("./utils");
+const { testDbConnect, postLoginAndGetCookie } = require("./utils");
 
 let server = null;
 
