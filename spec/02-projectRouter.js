@@ -6,7 +6,7 @@ const express = require("express");
 const { expect } = require("chai");
 
 const initAsyncApp = require("../src/loaders/initAsyncApp");
-const { testDbConnecting } = require("./utils");
+const { testDbConnect } = require("./utils");
 const ProjectModel = require("../models/Project");
 
 let server = null;
@@ -16,10 +16,13 @@ describe("* projects Router", () => {
     const app = await initAsyncApp(express());
     server = request.agent(app);
 
-    return testDbConnecting(process.env.MONGODB_TEST);
+    await testDbConnect();
   });
 
-  after(() => mongoose.disconnect());
+  after(async () => {
+    await mongoose.connection.db.dropDatabase();
+    await mongoose.disconnect();
+  });
 
   let projectId = "";
 
