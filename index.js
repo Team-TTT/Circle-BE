@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
-const initLoaders = require("./src/loaders/index");
+const initAsyncApp = require("./src/loaders/initAsyncApp");
+const loadHttpServer = require("./src/loaders/server");
 
-initLoaders(express());
+loadHttpServer(initAsyncApp(express()));
