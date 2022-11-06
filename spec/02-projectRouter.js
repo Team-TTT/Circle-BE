@@ -6,10 +6,11 @@ const express = require("express");
 const { expect } = require("chai");
 
 const initAsyncApp = require("../src/loaders/initAsyncApp");
-const { testDbConnect } = require("./utils");
+const { testDbConnect, postLoginAndGetCookie } = require("./utils");
 const ProjectModel = require("../models/Project");
 
 let server = null;
+let sessionCookie = "";
 
 describe("* projects Router", () => {
   before(async () => {
@@ -17,10 +18,13 @@ describe("* projects Router", () => {
     server = request.agent(app);
 
     await testDbConnect();
+
+    const postLoginResponse = await postLoginAndGetCookie(server);
+    sessionCookie = postLoginResponse.headers["set-cookie"][0];
+    await server.set("Cookie", sessionCookie)
   });
 
   after(async () => {
-    await mongoose.connection.db.dropDatabase();
     await mongoose.disconnect();
   });
 
@@ -33,7 +37,6 @@ describe("* projects Router", () => {
 
     const response = await server
       .post("/projects")
-      .set("Cookie", `session=${process.env.COOKIE}`)
       .send(newProject)
       .expect(200);
 
@@ -43,7 +46,6 @@ describe("* projects Router", () => {
   it("Get /projects", async () => {
     const response = await server
       .get("/projects")
-      .set("Cookie", `session=${process.env.COOKIE}`)
       .expect(200);
 
     const targetProject = response.body
@@ -58,7 +60,6 @@ describe("* projects Router", () => {
 
     await server
       .put(`/projects/${projectId}`)
-      .set("Cookie", `session=${process.env.COOKIE}`)
       .send(newTitle)
       .expect(200);
 
@@ -69,7 +70,6 @@ describe("* projects Router", () => {
   it("Delete /projects/:projectId", async () => {
     const response = await server
       .delete(`/projects/${projectId}`)
-      .set("Cookie", `session=${process.env.COOKIE}`)
       .expect(200);
 
     expect(response.body).to.eql({ result: "success" });

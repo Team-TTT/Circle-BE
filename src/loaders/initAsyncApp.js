@@ -6,6 +6,8 @@ const logger = require("../../libs/logger");
 const loadDatabase = require("./database");
 const indexRouter = require("../routes/index");
 
+const { MESSAGE } = require("../constants");
+
 const initAsyncApp = async (app) => {
   logger.info("app start");
 
@@ -26,7 +28,7 @@ const initAsyncApp = async (app) => {
 
     const error = process.env.NODE_ENV === "development" || err.status
       ? err
-      : new Error("Internal server error");
+      : new Error(MESSAGE.INTERNAL_SERVER_ERROR);
 
     res.status(err.status || 500).json({ message: error.message });
   });
