@@ -1,4 +1,10 @@
 const mongoose = require('mongoose');
+const axios = require("axios");
+const User = require("../models/User");
+const Project = require('../models/Project');
+const Channel = require('../models/Channel');
+
+const { admin } = require('../config/firebase.config');
 const logger = require('../libs/logger');
 
 module.exports = {
@@ -16,15 +22,32 @@ module.exports = {
       uid: process.env.UID,
     };
 
-    const token = process.env.TOKEN;
+    const token = await admin.auth().createCustomToken(process.env.UID);
+
+    const getGoogleIdToken = await axios({
+      method: 'post',
+      url: `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${process.env.FIREBASE_API_KEY}`,
+      data: {
+        token,
+        returnSecureToken: true,
+      },
+    });
+
+    const { idToken } = getGoogleIdToken.data;
 
     const response = await server
       .post("/auth/users")
       .send(googleUserInfo)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${idToken}`)
       .expect("set-cookie", /session/)
       .expect(200);
 
     return response;
+  },
+
+  cleanUpTestDatabase: async () => {
+    await User.deleteMany({});
+    await Project.deleteMany({});
+    await Channel.deleteMany({});
   },
 };

@@ -26,7 +26,7 @@ const createChannel = async (req, res, next) => {
       .exec();
 
     const channelCount = selectedProject.channels.length;
-    if (channelCount > LIMITED_CHANNEL_COUNT) {
+    if (channelCount >= LIMITED_CHANNEL_COUNT) {
       return next(createError(423, LIMITED_CHANNEL));
     }
 
