@@ -89,21 +89,34 @@ Circle은 웹페이지를 방문한 사용자들이 실시간으로 음성 대�
 1. 프로젝트를 클론 받은 후, 루트 디렉토리에 `.env` 파일을 생성 후 아래와 같이 환경 변수를 입력해 주세요.
 
     <details>
-      <summary>Service Client</summary>
+      <summary>Server</summary>
 
     ```
-    REACT_APP_SOCKET_URL=<default = ws://52.79.155.206>
-    REACT_APP_NODE_ENV=development
+    # MongoDB config
+    MONGODB_SECRET_STRING=<your-mongodb-connection-string>
+    MONGODB_DB_NAME=<your-database-name>
+    SECRET_KEY=<your-secret-key>
+
+    # Domain
+    REQUEST_DOMAIN=<default = http://localhost:3001>
     ```
     </details>
 
-<br>
+2. Firebase Admin SDK의 비공개 키(json파일)를 생성하여 아래 경로의 폴더에 넣어주세요.
 
-2. 아래의 명령어로 실행해주세요.
-```
-npm install
-npm start
-```
+    [Firebase admin SDK 참조 문서](https://console.firebase.google.com/u/0/project/team-ttt-circle/settings/serviceaccounts/adminsdk)
+
+
+    ```
+    `<PROJECT_ROOT_DIRECTORY>/config/secret`
+    ```
+
+3. 아래의 명령어로 실행해주세요.
+
+    ```
+    npm install
+    npm start
+    ```
 
 <br>
 
